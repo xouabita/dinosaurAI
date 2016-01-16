@@ -13,5 +13,6 @@ add the following script in your bookmarklet:
 javascript: (function () {
   var script = document.createElement('script');
   script.setAttribute('src', 'http://localhost:8080/app.js');
+  document.body.appendChild(script);
 }());
 ~~~
