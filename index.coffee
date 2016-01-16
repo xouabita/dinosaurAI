@@ -1,1 +1,1 @@
-alert "Hello World!"
+keyboard = require './keyboard'
