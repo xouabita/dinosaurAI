@@ -1,7 +1,12 @@
-keyboard = require './keyboard'
-game     = require './game'
+co = require 'co'
 
-setInterval ->
-  if game.getDistance() < 70
-    keyboard.up()
-, 25
+window.keyboard = require './keyboard'
+game     = require './game'
+Learner  = require './learner'
+
+learner = new Learner
+
+co ->
+  loop
+    yield learner.testGenomes()
+    learner.naturalSelection()
