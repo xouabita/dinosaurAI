@@ -1,16 +1,25 @@
+co = require 'co'
+
 nextObstacle_ = undefined
 { tRex }      = Runner.instance_
 xDino_        = tRex.xPos + tRex.config.WIDTH
 
+keyboard = require './keyboard'
+cactusJumped = undefined
+
 # Function to update the next obstacle
 updateNextObstacle_ = ->
   obstacles = Runner.instance_.horizon.obstacles
+  oldObstacle = nextObstacle_
   if obstacles.length is 0
     nextObstacle_ = undefined
   else
     nextObstacle_ =
       if obstacles[0].xPos > xDino_ then obstacles[0]
       else obstacles[1]
+
+  # update the cactus jumped
+  if oldObstacle isnt nextObstacle_ then cactusJumped += 1
 
 # Update the next obstacle every 50ms
 setInterval updateNextObstacle_, 50
@@ -24,3 +33,19 @@ module.exports.getHeight = ->
   else 0
 
 module.exports.getSpeed = -> Runner.instance_.currentSpeed
+
+module.exports.play = co.wrap ->
+  {started, crashed} = Runner.instance_
+
+  # reset cactusJumped
+  cactusJumped = 0
+
+  keyboard.up()
+
+  return yield co ->
+    new Promise (res) ->
+      checker = setInterval ->
+        if Runner.instance_.crashed
+          clearInterval checker
+          res [cactusJumped, Runner.instance_.distanceRan]
+      , 100
