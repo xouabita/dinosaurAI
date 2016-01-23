@@ -10,6 +10,27 @@ keyboard = require './keyboard'
 GENOMES_NB = 8
 SELECTION = 2
 
+# Extract neurons from a Perceptron
+getNeurons = (perceptron) ->
+  {input, hidden, output} = perceptron.layers
+  layers = [input, hidden..., output]
+  neurons = []
+  for layer in layers
+    neurons.push neuron for neuron in layer.list
+  console.log neurons
+
+# Set the neurons in a Perceptron
+setNeurons = (perceptron, neurons) ->
+  {input, hidden, output} = perceptron.layers
+  input.list  = neurons.shift()
+  output.list = neurons.pop()
+
+  for layer in hidden
+    list = []
+    for neuron in layer.list
+      list.push neurons.shift()
+    layer.list = list
+
 testGenome = co.wrap (genome) ->
 
   # Ask neural network what action need to be done
@@ -40,26 +61,24 @@ crossOver = (a, b) ->
   # 50% of swapping
   if Math.random() > .5 then [a, b] = [b, a]
 
-  res = Object.assign {}, a
-  {neurons} = res
+  a = _.cloneDeep a
+  aNeurons = a.neurons
+  bNeurons = b.neurons
 
-  cut = Math.round neurons.length * Math.random()
-  neurons[k].bias = b[k].bias for k in [cut...neurons.length]
+  cut = Math.round aNeurons.length * Math.random()
+  aNeurons[k].bias = bNeurons[k].bias for k in [cut...bNeurons.length]
 
-  return res
+  return a
 
 mutate = (net) ->
-  res = Object.assign {}, net
-  {neurons, connections} = res
+  res = _.cloneDeep net
 
-  # Mutate bias first
+  {neurons} = res
   cut = Math.round neurons.length * Math.random()
   for k in [cut...neurons.length]
     neurons[k].bias = neurons[k].bias * (Math.random() - 0.5) * 3
 
-  cut = Math.round connections.length * Math.random()
-  for k in [cut...connections.length]
-    connections[k].weight = neurons[k].bias * (Math.random() - 0.5) * 3
+  return res
 
 class Learner
 

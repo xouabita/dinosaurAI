@@ -40,7 +40,12 @@ module.exports.play = co.wrap ->
   # reset cactusJumped
   cactusJumped = 0
 
-  keyboard.up()
+  if started and not crashed
+    rej new Error "Game started and not crashed"
+  else if not started
+    keyboard.up()
+  else
+    Runner.instance_.restart()
 
   return yield co ->
     new Promise (res) ->
