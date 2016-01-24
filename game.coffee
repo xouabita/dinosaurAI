@@ -1,4 +1,5 @@
 co = require 'co'
+ui = require './ui'
 
 nextObstacle_ = undefined
 { tRex }      = Runner.instance_
@@ -19,26 +20,39 @@ updateNextObstacle_ = ->
       else obstacles[1]
 
   # update the cactus jumped
-  if oldObstacle isnt nextObstacle_ then cactusJumped += 1
+  if oldObstacle isnt nextObstacle_ and oldObstacle
+    cactusJumped += 1
+    ui.setCactusJumped cactusJumped
 
 # Update the next obstacle every 50ms
 setInterval updateNextObstacle_, 50
 
 module.exports.getDistance = ->
-  if nextObstacle_ then nextObstacle_.xPos - xDino_
-  else 600 - xDino_
+  distance =
+    if nextObstacle_ then nextObstacle_.xPos - xDino_
+    else 600 - xDino_
+  ui.setDistance distance
+  return distance
 
 module.exports.getHeight = ->
-  if nextObstacle_ then 150 - nextObstacle_.yPos
-  else 0
+  height =
+    if nextObstacle_ then 150 - nextObstacle_.yPos
+    else 0
+  ui.setHeight height
+  return height
 
-module.exports.getSpeed = -> Runner.instance_.currentSpeed * 100
+module.exports.getSpeed = ->
+  speed = Runner.instance_.currentSpeed
+  ui.setSpeed speed
+  return speed
 
 module.exports.play = co.wrap ->
   {started, crashed} = Runner.instance_
 
   # reset cactusJumped
   cactusJumped = 0
+  nextObstacle_ = undefined
+  ui.setCactusJumped 0
 
   if started and not crashed
     rej new Error "Game started and not crashed"

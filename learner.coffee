@@ -1,5 +1,6 @@
 _  = require 'lodash'
 co = require 'co'
+ui = require './ui'
 
 game     = require './game'
 keyboard = require './keyboard'
@@ -23,6 +24,7 @@ testGenome = co.wrap (genome) ->
 
     # Apply to network
     [output] = genome.activate inputs
+    ui.setActivation output
 
     # Use the result as game input
     if output < .45
