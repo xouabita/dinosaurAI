@@ -10,3 +10,4 @@ co ->
   loop
     yield learner.testGenomes()
     learner.naturalSelection()
+    console.log "new generation"

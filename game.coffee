@@ -52,5 +52,5 @@ module.exports.play = co.wrap ->
       checker = setInterval ->
         if Runner.instance_.crashed
           clearInterval checker
-          res [cactusJumped, Runner.instance_.distanceRan]
+          res [cactusJumped - 1, Runner.instance_.distanceRan]
       , 100

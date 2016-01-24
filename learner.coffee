@@ -4,37 +4,16 @@ co = require 'co'
 game     = require './game'
 keyboard = require './keyboard'
 
-{ Architect, Network } = require 'synaptic'
+{ Network, Layer } = require 'synaptic'
 
 # Constants variables
-GENOMES_NB = 8
+GENOMES_NB = 4
 SELECTION = 2
-
-# Extract neurons from a Perceptron
-getNeurons = (perceptron) ->
-  {input, hidden, output} = perceptron.layers
-  layers = [input, hidden..., output]
-  neurons = []
-  for layer in layers
-    neurons.push neuron for neuron in layer.list
-  console.log neurons
-
-# Set the neurons in a Perceptron
-setNeurons = (perceptron, neurons) ->
-  {input, hidden, output} = perceptron.layers
-  input.list  = neurons.shift()
-  output.list = neurons.pop()
-
-  for layer in hidden
-    list = []
-    for neuron in layer.list
-      list.push neurons.shift()
-    layer.list = list
 
 testGenome = co.wrap (genome) ->
 
   # Ask neural network what action need to be done
-  setInterval ->
+  tester = setInterval ->
 
     # Fetch game inputs
     inputs = [
@@ -54,7 +33,10 @@ testGenome = co.wrap (genome) ->
   , 25
 
   # Wait for the game to finish and add results
-  return yield game.play()
+  results = yield game.play()
+  clearInterval tester
+
+  return results
 
 crossOver = (a, b) ->
 
@@ -73,10 +55,15 @@ crossOver = (a, b) ->
 mutate = (net) ->
   res = _.cloneDeep net
 
-  {neurons} = res
-  cut = Math.round neurons.length * Math.random()
-  for k in [cut...neurons.length]
-    neurons[k].bias = neurons[k].bias * (Math.random() - 0.5) * 3
+  cut = Math.round res.length * Math.random()
+  for k in [cut...res.neurons.length]
+    res.neurons[k].bias += res.neurons[k].bias * Math.random() * 3
+    res.neurons[k].bias += Math.random()
+
+  cut = Math.round res.length * Math.random()
+  for k in [cut...res.connections.length]
+    res.connections[k].weight += res.connections[k].weight * Math.random() * 3
+    res.connections[k].weight += Math.random()
 
   return res
 
@@ -85,14 +72,18 @@ class Learner
   constructor: ->
 
     # init genomes
-    @genomes = (new Architect.Perceptron 3, 4, 4, 1 for i in [0...GENOMES_NB])
+    @genomes = []
+    for i in [0...GENOMES_NB]
+      @genomes.push new Network
+        input: new Layer 3
+        hidden: [new Layer 4, new Layer 4]
+        output: new Layer 1
 
   testGenomes: co.wrap ->
 
     # testGenome for each genomes
     for genome in @genomes
       [cactusJumped, distanceRan] = yield testGenome genome
-      console.log cactusJumped
       genome.cactusJumped = cactusJumped
       genome.distanceRan = distanceRan
 
@@ -119,7 +110,11 @@ class Learner
     crossOverNb = 2 * totalNb / 3
     mutationNb = totalNb - crossOverNb
 
-    @genomes.push (crossOver best, second) for i in [0...crossOverNb]
-    @genomes.push (mutate best) for i in [0...mutationNb]
+    a = best.toJSON()
+    b = second.toJSON()
+
+    @genomes.push Network.fromJSON (crossOver a, b) for i in [0...crossOverNb]
+    for i in [0...mutationNb]
+      @genomes.push Network.fromJSON (mutate (crossOver a, b))
 
 module.exports = Learner
