@@ -32,7 +32,7 @@ module.exports.getHeight = ->
   if nextObstacle_ then 150 - nextObstacle_.yPos
   else 0
 
-module.exports.getSpeed = -> Runner.instance_.currentSpeed
+module.exports.getSpeed = -> Runner.instance_.currentSpeed * 100
 
 module.exports.play = co.wrap ->
   {started, crashed} = Runner.instance_
