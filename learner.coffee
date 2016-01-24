@@ -97,7 +97,7 @@ class Learner
       else
         return 0
 
-    [..., second, best] = @genomes
+    [..., fourth, third, second, best] = @genomes
     @genomes = []
 
     # apply crossOver
@@ -105,11 +105,12 @@ class Learner
     crossOverNb = Math.round 2 * totalNb / 3
     mutationNb = totalNb - crossOverNb
 
-    a = best.toJSON()
-    b = second.toJSON()
+    for i in [0...crossOverNb]
+      a = best.toJSON()
+      b = (_.sample [fourth, second, best]).toJSON()
+      @genomes.push Network.fromJSON mutate crossOver a, b
 
-    @genomes.push Network.fromJSON (crossOver a, b) for i in [0...crossOverNb]
     for i in [0...mutationNb]
-      @genomes.push Network.fromJSON (mutate (crossOver a, b))
+      @genomes.push Network.fromJSON mutate best.toJSON()
 
 module.exports = Learner
