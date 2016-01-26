@@ -8,7 +8,7 @@ keyboard = require './keyboard'
 { Network, Architect } = require 'synaptic'
 
 # Constants variables
-GENOMES_NB = 12
+GENOMES_NB = 5
 
 testGenome = co.wrap (genome) ->
 
@@ -89,7 +89,20 @@ class Learner
 
   toggleAutoSave: -> @autosave = not @autosave
 
-  naturalSelection: -> co.wrap =>
+  naturalSelection: co.wrap ->
+
+    # if autosave, then post the data
+    if @autosave
+      data = JSON.stringify @genomes
+      try
+        yield fetch 'http://localhost:3000/genomes',
+          method: 'POST'
+          headers:
+            'Accept': 'application/json'
+            'Content-Type': 'application/json'
+          body: data
+      catch
+        console.log "Cannot reach server. Check your server..."
 
     # Select the two best genomes
     @genomes.sort (a, b) ->
@@ -115,20 +128,5 @@ class Learner
 
     for i in [0...mutationNb]
       @genomes.push Network.fromJSON mutate best.toJSON()
-
-    # if autosave, then post the data
-    if @autosave
-      data = JSON.stringify @genomes
-      try
-        yield fetch 'http://localhost:3000/genomes',
-          method: 'POST'
-          headers:
-            'Accept': 'application/json'
-            'Content-Type': 'application/json'
-            'Access-Control-Request-Method': 'POST'
-            'Access-Control-Request-Headers': 'X-Custom-Header'
-          body: data
-      catch
-        console.log "Cannot reach server. Check your server..."
 
 module.exports = Learner
