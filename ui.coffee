@@ -30,6 +30,20 @@ UI.patchPage = ->
   ]
   menu.appendChild elt for elt in elements
 
+  toggleAutoSave = document.createElement 'input'
+  toggleAutoSave.type = 'checkbox'
+  toggleAutoSave.checked = yes
+  toggleAutoSave.style.opacity = 1
+  toggleAutoSave.onclick = ->
+    console.log 'click'
+    learner.toggleAutoSave()
+
+  label = document.createElement 'label'
+  label.innerHTML = 'Auto Save'
+  label.insertBefore toggleAutoSave, label.firstChild
+
+  menu.appendChild label
+
 UI.setItem = (elt, val) -> @[elt].innerHTML = val
 
 UI.setDistance = (val) -> @setItem 'distance', "Distance: #{val}"

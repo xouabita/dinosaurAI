@@ -76,7 +76,8 @@ class Learner
   constructor: ->
 
     # init genomes
-    @genomes = (new Architect.Perceptron 3, 4, 4, 1 for [0...GENOMES_NB])
+    @genomes  = (new Architect.Perceptron 3, 4, 4, 1 for [0...GENOMES_NB])
+    @autosave = yes
 
   testGenomes: co.wrap ->
 
@@ -86,7 +87,9 @@ class Learner
       genome.cactusJumped = cactusJumped
       genome.distanceRan = distanceRan
 
-  naturalSelection: ->
+  toggleAutoSave: -> @autosave = not @autosave
+
+  naturalSelection: -> co.wrap =>
 
     # Select the two best genomes
     @genomes.sort (a, b) ->
@@ -112,5 +115,20 @@ class Learner
 
     for i in [0...mutationNb]
       @genomes.push Network.fromJSON mutate best.toJSON()
+
+    # if autosave, then post the data
+    if @autosave
+      data = JSON.stringify @genomes
+      try
+        yield fetch 'http://localhost:3000/genomes',
+          method: 'POST'
+          headers:
+            'Accept': 'application/json'
+            'Content-Type': 'application/json'
+            'Access-Control-Request-Method': 'POST'
+            'Access-Control-Request-Headers': 'X-Custom-Header'
+          body: data
+      catch
+        console.log "Cannot reach server. Check your server..."
 
 module.exports = Learner
