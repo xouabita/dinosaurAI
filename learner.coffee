@@ -8,7 +8,7 @@ keyboard = require './keyboard'
 { Network, Architect } = require 'synaptic'
 
 # Constants variables
-GENOMES_NB = 5
+GENOMES_NB = 12
 
 testGenome = co.wrap (genome) ->
 
@@ -54,15 +54,14 @@ crossOver = (a, b) ->
 mutate = (net) ->
   res = _.cloneDeep net
 
-  for k in [cut...res.neurons.length]
+  for k in [0...res.neurons.length]
 
     if Math.random() > .3 then continue
 
     res.neurons[k].bias += (Math.random() - 0.5) * 3
     res.neurons[k].bias += Math.random() - 0.5
 
-  cut = Math.round res.length * Math.random()
-  for k in [cut...res.connections.length]
+  for k in [0...res.connections.length]
 
     if Math.random() > .3 then continue
 
