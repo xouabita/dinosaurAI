@@ -1,6 +1,8 @@
 dinosaurAI
 ==========
 
+![screenshot](http://i.imgur.com/oIFahNy.png?1)
+
 Disclaimer
 ----------
 
