@@ -1,12 +1,21 @@
-ia-dinosaur
-===========
+dinosaurAI
+==========
 
-A simple script/bookmarklet to train a dinosaur to jump cactus.
+Disclaimer
+----------
 
-Debug
------
+_This project is heavily inspired by [IAMDinosaur](https://github.com/ivanseidel/IAMDinosaur). Go check it._
 
-You can run `webpack-dev-server --watch` to serve and watch the script. Then
+Install
+-------
+
+1. You need to have nodejs and coffee-script installed
+2. Run `npm i`
+
+Run
+---
+
+You need to run `webpack-dev-server --watch` to serve and watch the script. Then
 add the following script in your bookmarklet:
 
 ~~~js
@@ -16,3 +25,5 @@ javascript: (function () {
   document.body.appendChild(script);
 }());
 ~~~
+
+Also, if you want to save the genomes, you can run `coffee server.coffee`
