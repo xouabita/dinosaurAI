@@ -16,3 +16,8 @@ co ->
     generation += 1
 
 ui.patchPage()
+
+# Fix the game
+setInterval ->
+  Runner.instance_.tRex.xPos = 21
+, 2000

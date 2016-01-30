@@ -51,6 +51,18 @@ module.exports.play = co.wrap ->
 
   # reset cactusJumped
   cactusJumped = 0
+  jumps = 0
+  jumping = Runner.instance_.tRex.jumping
+
+  ui.setJumps 0
+  updateJumps = ->
+    if not jumping and Runner.instance_.tRex.jumping
+      jumps += 1
+      ui.setJumps jumps
+    jumping = Runner.instance_.tRex.jumping
+
+  checkJump = setInterval updateJumps, 1
+
   nextObstacle_ = undefined
   ui.setCactusJumped 0
 
@@ -66,5 +78,6 @@ module.exports.play = co.wrap ->
       checker = setInterval ->
         if Runner.instance_.crashed
           clearInterval checker
-          res [cactusJumped - 1, Runner.instance_.distanceRan]
+          clearInterval checkJump
+          res [cactusJumped, Runner.instance_.distanceRan, jumps]
       , 100

@@ -81,10 +81,14 @@ class Learner
   testGenomes: co.wrap ->
 
     # testGenome for each genomes
-    for genome in @genomes
-      [cactusJumped, distanceRan] = yield testGenome genome
-      genome.cactusJumped = cactusJumped
-      genome.distanceRan = distanceRan
+    for genome, i in @genomes
+      ui.setGenome i + 1
+      [cactusJumped, distanceRan, jumps] = yield testGenome genome
+      console.log cactusJumped
+      genome.fitness =
+        if jumps is 0 then -Infinity
+        else cactusJumped * cactusJumped / jumps
+      console.log genome.fitness
 
   toggleAutoSave: -> @autosave = not @autosave
 
@@ -105,14 +109,34 @@ class Learner
 
     # Select the two best genomes
     @genomes.sort (a, b) ->
-      if a.cactusJumped > b.cactusJumped
+      if a.fitness > b.fitness
         return 1
-      else if a.cactusJumped < b.cactusJumped
+      else if a.fitness < b.fitness
         return -1
       else
         return 0
 
-    [..., fourth, third, second, best] = @genomes
+    # Classify the tested genomes by the fitness
+    buckets = []
+    bucketIndex = 0
+    buckets[0] = [@genomes.shift()]
+    for genome in @genomes
+      if buckets[bucketIndex][0].fitness is genome.fitness
+        buckets[bucketIndex].push genome
+      else
+        bucketIndex += 1
+        buckets[bucketIndex] = [genome]
+
+    # fill selection array with more probability for genome with more fitness
+    # to be selected
+    multiplier = 1
+    selection  = []
+    for genomes in buckets
+      for genome in genomes
+        for i in [0...multiplier]
+          selection.push genome
+      multiplier *= 2
+
     @genomes = []
 
     # apply crossOver
@@ -121,11 +145,12 @@ class Learner
     mutationNb = totalNb - crossOverNb
 
     for i in [0...crossOverNb]
-      a = best.toJSON()
-      b = (_.sample [fourth, second, best]).toJSON()
-      @genomes.push Network.fromJSON mutate crossOver a, b
+      a = (_.sample selection).toJSON()
+      b = (_.sample selection).toJSON()
+      @genomes.push Network.fromJSON crossOver a, b
 
     for i in [0...mutationNb]
-      @genomes.push Network.fromJSON mutate best.toJSON()
+      bestGenome = _.sample buckets[buckets.length - 1]
+      @genomes.push Network.fromJSON mutate bestGenome.toJSON()
 
 module.exports = Learner

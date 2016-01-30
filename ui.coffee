@@ -1,10 +1,12 @@
 UI =
   cactusJumped: document.createElement 'div'
+  jumps: document.createElement 'div'
   speed: document.createElement 'div'
   distance: document.createElement 'div'
   height: document.createElement 'div'
   activation: document.createElement 'div'
   generation: document.createElement 'div'
+  genome: document.createElement 'div'
 
 UI.patchPage = ->
   game = document.createElement 'div'
@@ -26,7 +28,8 @@ UI.patchPage = ->
   menu.style.verticalAlign = "top"
 
   elements = [
-    @cactusJumped, @speed, @distance, @height, @activation, @generation
+    @cactusJumped, @jumps, @speed, @distance, @height, @activation,
+    @generation, @genome
   ]
   menu.appendChild elt for elt in elements
 
@@ -53,5 +56,7 @@ UI.setActivation = (val) -> @setItem 'activation', "Activation: #{val}"
 UI.setGeneration = (val) -> @setItem 'generation', "Generation: #{val}"
 UI.setCactusJumped = (val) ->
   @setItem 'cactusJumped', "Cactus Jumped: #{val}"
+UI.setGenome = (val) -> @setItem 'genome', "Genome: #{val}/12"
+UI.setJumps = (val) -> @setItem 'jumps', "Jumps: #{val}"
 
 module.exports = UI
