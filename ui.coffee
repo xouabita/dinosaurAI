@@ -44,8 +44,25 @@ UI.patchPage = ->
   label = document.createElement 'label'
   label.innerHTML = 'Auto Save'
   label.insertBefore toggleAutoSave, label.firstChild
+  label.style.display = 'block'
 
   menu.appendChild label
+  load = document.createElement 'input'
+  load.type = 'file'
+  load.id = 'load'
+
+  loadFile = (e) ->
+    file = e.target.files[0]
+    if not file then return
+
+    reader = new FileReader
+    reader.onload = (e) ->
+      data = JSON.parse e.target.result
+      learner.load data
+    reader.readAsText file
+
+  menu.appendChild load
+  load.addEventListener 'change', loadFile, no
 
 UI.setItem = (elt, val) -> @[elt].innerHTML = val
 
