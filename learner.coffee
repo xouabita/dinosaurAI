@@ -76,7 +76,11 @@ class Learner
 
     # init genomes
     @genomes  = (new Architect.Perceptron 3, 4, 4, 1 for [0...GENOMES_NB])
-    @autosave = yes
+
+  load: (data) ->
+    @genomes = []
+    @genomes.push Network.fromJSON genome.genome for genome in data
+    console.log @genomes
 
   testGenomes: co.wrap ->
 
