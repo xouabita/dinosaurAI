@@ -96,14 +96,19 @@ class Learner
 
     # if autosave, then post the data
     if @autosave
-      data = JSON.stringify @genomes
+      data = []
+      for genome in @genomes
+        cell =
+          genome: genome.toJSON()
+          fitness: genome.fitness
+        data.push cell
       try
         yield fetch 'http://localhost:3000/genomes',
           method: 'POST'
           headers:
             'Accept': 'application/json'
             'Content-Type': 'application/json'
-          body: data
+          body: JSON.stringify data
       catch
         console.log "Cannot reach server. Check your server..."
 
