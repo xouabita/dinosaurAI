@@ -1,0 +1,24 @@
+{
+  "name": "dinosaurAI",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "doc": "docco index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xouabita/dinosaurAI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xouabita/dinosaurAI/issues"
+  },
+  "homepage": "https://github.com/xouabita/dinosaurAI#readme",
+  "devDependencies": {
+    "docco": "^0.7.0",
+    "uglify-js": "^2.7.0"
+  }
+}
