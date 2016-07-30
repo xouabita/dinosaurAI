@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "doc": "docco index.js"
+    "doc": "docco index.js",
+    "start": "python -m SimpleHTTPServer"
   },
   "repository": {
     "type": "git",
